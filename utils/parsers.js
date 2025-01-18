@@ -6,5 +6,5 @@ export const parseSQL = (file) => {
         .replace(/(\r\n|\n|\r)/gm, ' ')
         .replace(/\s+/g, ' ')
         .split(';')
-        .filter((query) => query !== ' ');
+        .filter((query) => query !== ' ' && query !== '');
 }

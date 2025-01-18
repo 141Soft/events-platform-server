@@ -1,6 +1,6 @@
-import mysql from 'mysql';
+import mysql2 from 'mysql2';
 import fs from 'fs';
-import { parseSQL } from './parsers.js';
+import { parseSQL } from './utils/parsers.js';
 
 const MYSQL_CONF = {
     connectionLimit: 10,
@@ -18,7 +18,7 @@ class DBHelper {
     }
 
     openPool(config) {
-        return this.pool = mysql.createPool(config);
+        return this.pool = mysql2.createPool(config);
     }
 
     closePool() {
@@ -29,7 +29,10 @@ class DBHelper {
     //Allows multiple operations to be carried out on the same connection before releasing
     reserveConnection(callback) {
         this.pool.getConnection((error, connection) => {
-            if(error){ console.error(error) }
+            if(error){ 
+                console.error(error) 
+                return callback(error);
+            }
             callback(connection)
             connection.release();
         })
@@ -54,9 +57,10 @@ class DBHelper {
             const queries = [...schema, ...seed];
 
             queries.forEach((query) => {
-                connection.query(query, (error) => {
+                connection.query(query, (error, results) => {
                     if(error){ console.error(error) }
                 })
+                
             })
             connection.release();
         })
