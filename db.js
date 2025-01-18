@@ -17,13 +17,22 @@ class DBHelper {
         return this;
     }
 
-    openPool() {
-        return this.pool = mysql.createPool(MYSQL_CONF);
+    openPool(config) {
+        return this.pool = mysql.createPool(config);
     }
 
     closePool() {
         this.pool.end;
         this.pool = null;
+    }
+
+    //Allows multiple operations to be carried out on the same connection before releasing
+    reserveConnection(callback) {
+        this.pool.getConnection((error, connection) => {
+            if(error){ console.error(error) }
+            callback(connection)
+            connection.release();
+        })
     }
 
     seed(schemaPath, seedPath) {
@@ -34,27 +43,21 @@ class DBHelper {
         if(!schemaPath || !seedPath){
             console.log('Please specify schema and seed.');
             return false
-        }
+        };
 
+        //Reserving a connection here for potential multiple steps
         this.pool.getConnection((error, connection) => {
             if(error){ console.error(error) };
 
-            //Schema
             const schema = parseSQL(fs.readFileSync(schemaPath));
-            schema.forEach((query) => {
-                connection.query(query, (error) => {
-                    if(error){ console.error(error) };
-                });
-            })
-
-            //Seed
             const seed = parseSQL(fs.readFileSync(seedPath));
-            seed.forEach((query) => {
-                connection.query(query, (error) => {
-                    if(error){ console.error(error) };
-                });
-            })
+            const queries = [...schema, ...seed];
 
+            queries.forEach((query) => {
+                connection.query(query, (error) => {
+                    if(error){ console.error(error) }
+                })
+            })
             connection.release();
         })
     }
