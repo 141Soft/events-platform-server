@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS events (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     eventName VARCHAR(100) NOT NULL,
     eventDate DATETIME NOT NULL,
-    eventDesc TEXT NOT NULL
+    eventDesc TEXT NOT NULL,
+    eventStub TEXT NOT NULL,
+    eventThumb VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS eventTags (
