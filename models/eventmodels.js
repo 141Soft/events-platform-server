@@ -1,6 +1,6 @@
 import { db } from '../db.js'
 
-const postEvent = async (name, date, desc, stub, thumb, imgarray, tagarray) => {
+export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagarray) => {
 
     let id;
     let connection;
@@ -44,7 +44,7 @@ const postEvent = async (name, date, desc, stub, thumb, imgarray, tagarray) => {
 //Detailed data will come from a getEvent() singular which takes id
 
 //This time complexity needs work
-const fetchEvents = async() => {
+export const fetchEvents = async() => {
 
     let connection;
 
