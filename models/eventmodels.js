@@ -7,14 +7,14 @@ const postEvent = async (name, date, desc, imgarray, tagarray) => {
     const query = 
     `
     INSERT INTO events (eventName, eventDate, eventDesc)
-    VALUE('${name}','${date}','${desc}')
+    VALUES(?, ?, ?)
     RETURNING *;
     `;
 
     let id;
 
     try{
-        const [fields] = await db.pool.query(query);
+        const [fields] = await db.pool.query(query,[name, date, desc]);
         id = fields[0].id;
     } catch(error) {
         console.error(error);
@@ -25,10 +25,10 @@ const postEvent = async (name, date, desc, imgarray, tagarray) => {
         const query = 
         `
         INSERT INTO eventTags (eventID, eventTag)
-        VALUE('${id}','${tag}');
+        VALUES(?, ?);
         `;
         try{
-            await db.pool.query(query);
+            await db.pool.query(query,[id, tag]);
         } catch(error) {
             console.error(error);
             throw error;
@@ -39,10 +39,10 @@ const postEvent = async (name, date, desc, imgarray, tagarray) => {
         const query = 
         `
         INSERT INTO eventImages (eventID, imgurl)
-        VALUE('${id}','${img}');
+        VALUES(?, ?);
         `
         try{
-            await db.pool.query(query);
+            await db.pool.query(query, [id, img]);
         } catch(error) {
             console.error(error);
             throw error;
