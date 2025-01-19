@@ -7,7 +7,7 @@ const MYSQL_CONF = {
     host: 'localhost',
     user: 'test',
     password: 'secret',
-    database: 'test'
+    database: 'eventsPlatform'
 }
 
 class DBHelper {
@@ -38,9 +38,7 @@ class DBHelper {
             console.error(error);
             throw error;
         } finally {
-            if(connection){
-                connection.release();
-            }
+            connection.release();
         }
     }
 
@@ -71,9 +69,7 @@ class DBHelper {
             console.error(error);
             throw error;
         } finally {
-            if(connection) {
-                connection.release();
-            }
+            connection.release();
         }
     }
 
@@ -108,11 +104,10 @@ class DBHelper {
             console.error(error);
             throw error;
         } finally {
-            if(connection){
-                connection.release();
-            }
+            connection.release();
         }
     }
 }
 
 export const db = new DBHelper;
+db.openPool(MYSQL_CONF);
