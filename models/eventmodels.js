@@ -64,7 +64,6 @@ export const fetchEvents = async() => {
                 
                 event.tags = [event.tag];
                 delete event.tag;
-                console.log(event);
                 groupedEvents.push(event);
             }
             else{
