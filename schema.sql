@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS eventsPlatform;
 
 USE eventsPlatform;
 
-DROP TABLE IF EXISTS events, eventTags, eventImages;
+DROP TABLE IF EXISTS events, eventTags, eventImages, eventParticipants, users;
 
 CREATE TABLE IF NOT EXISTS events (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -24,3 +24,16 @@ CREATE TABLE IF NOT EXISTS eventImages (
     imgurl VARCHAR(100) NOT NULL,
     PRIMARY KEY(eventID, imgurl)
 );
+
+CREATE TABLE IF NOT EXISTS eventParticipants (
+    eventID INT NOT NULL,
+    userID INT NOT NULL,
+    PRIMARY KEY(eventID, userID)
+)
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    userEmail VARCHAR(100) NOT NULL,
+    userPassword VARCHAR(100) NOT NULL,
+    isAdmin INT
+)
