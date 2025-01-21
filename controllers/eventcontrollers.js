@@ -1,7 +1,7 @@
 import {insertEvent, fetchEvents} from '../models/eventmodels.js';
 
 export const postEvent = async () => {
-
+    
 }
 
 
