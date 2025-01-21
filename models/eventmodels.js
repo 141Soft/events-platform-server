@@ -54,21 +54,36 @@ export const fetchEvents = async(searchParams) => {
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
             `);
+        
+        //Duplicates some code
+        //This route is for a blank 'fetch everything' query, not sure if necessary
+        if(!searchParams){
+            const groupedEvents = new Map();
+            for(const event of result){
+                if(!groupedEvents.has(event.id)) {
+                    const newEvent = { ...event, tags: [event.tag] };
+                    delete newEvent.tag;
+                    groupedEvents.set(event.id, newEvent);
+                } else {
+                    const matchEvent = groupedEvents.get(event.id);
+                    matchEvent.tags.push(event.tag);
+                }
+            }
+            return{ events: Array.from(groupedEvents.values()) }
+        }
 
-        if(searchParams){
-            if(searchParams.id){
-                const id = parseInt(searchParams.id);
-                result = result.filter(e => e.id === id);
-                if(result.length === 0){ return false }
-            }
-            if(searchParams.name){
-                result = result.filter(e => e.eventName.toLowerCase().includes(searchParams.name.toLowerCase()))
-                if(result.length === 0){ return false }
-            }
-            if(searchParams.tag){
-                result = result.filter(e => e.tag === searchParams.tag)
-                if(result.length === 0){ return false }
-            }
+        if(searchParams.id){
+            const id = parseInt(searchParams.id);
+            result = result.filter(e => e.id === id);
+            if(result.length === 0){ return false }
+        }
+        if(searchParams.name){
+            result = result.filter(e => e.eventName.toLowerCase().includes(searchParams.name.toLowerCase()))
+            if(result.length === 0){ return false }
+        }
+        if(searchParams.tag){
+            result = result.filter(e => e.tag === searchParams.tag)
+            if(result.length === 0){ return false }
         }
 
         const groupedEvents = new Map();
@@ -103,7 +118,6 @@ export const fetchEvents = async(searchParams) => {
                 events: Array.from(groupedEvents.values())
             } 
         }
-
     } catch(error) {
         console.error('Error fetching events:', error);
         throw error;

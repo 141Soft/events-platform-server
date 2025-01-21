@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 app.get('/events', async (req, res, next) => {
     try {
-        const response = await getEvents();
+        const response = await getEvents(req.query);
         res.send(response);
     } catch (error) {
         next(error);
