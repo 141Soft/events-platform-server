@@ -39,44 +39,73 @@ export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagar
     }
 }
 
-//Should take a large number of search params
-//Will only retrieve lightweight data: Name, id, date, tags, thumbnail, stub
-//Detailed data will come from a getEvent() singular which takes id
-
-//This time complexity needs work
-export const fetchEvents = async() => {
+// seachParams object takes: id, tag, name, paginate, page, limit
+// Needs date parsing and filtering by date
+// Investigate how much of the filtering can be moved to the SQL query
+export const fetchEvents = async(searchParams) => {
 
     let connection;
 
     try {
         connection = await db.pool.getConnection();
 
-        const [result] = await connection.query(`
+        let [result] = await connection.query(`
             SELECT e.*, et.eventTag AS tag
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
             `);
 
-        const groupedEvents = [];
-
-        for(const event of result){
-            if(groupedEvents.filter(e => e.id === event.id).length === 0){
-                
-                event.tags = [event.tag];
-                delete event.tag;
-                groupedEvents.push(event);
+        if(searchParams){
+            if(searchParams.id){
+                const id = parseInt(searchParams.id);
+                result = result.filter(e => e.id === id);
+                if(result.length === 0){ return false }
             }
-            else{
-                const idCheck = (e) => e.id === event.id;
-                const i = groupedEvents.findIndex(idCheck);
-                groupedEvents[i].tags = [...groupedEvents[i].tags, event.tag];
+            if(searchParams.name){
+                result = result.filter(e => e.eventName.toLowerCase().includes(searchParams.name.toLowerCase()))
+                if(result.length === 0){ return false }
+            }
+            if(searchParams.tag){
+                result = result.filter(e => e.tag === searchParams.tag)
+                if(result.length === 0){ return false }
             }
         }
 
-        return groupedEvents;
+        const groupedEvents = new Map();
+
+        for(const event of result){
+            if(!groupedEvents.has(event.id)) {
+                const newEvent = { ...event, tags: [event.tag] };
+                delete newEvent.tag;
+                groupedEvents.set(event.id, newEvent);
+            } else {
+                const matchEvent = groupedEvents.get(event.id);
+                matchEvent.tags.push(event.tag);
+            }
+        }
+
+        if(searchParams.paginate){
+            let eventsArr = Array.from(groupedEvents.values());
+            const page = parseInt(searchParams.page) || 1;
+            const limit = parseInt(searchParams.limit) || 10;
+            const start = (page - 1) * limit;
+            const end = start + limit;
+            const count = eventsArr.length;
+            const totalPages = Math.ceil(count / limit);
+            const paginatedEvents = eventsArr.slice(start, end);
+
+            return {
+                events: paginatedEvents,
+                pagination: { page, limit, count, totalPages }
+            }
+        } else {
+            return{
+                events: Array.from(groupedEvents.values())
+            } 
+        }
 
     } catch(error) {
-        console.error(error);
+        console.error('Error fetching events:', error);
         throw error;
     } finally {
         if(connection) { connection.release(); }
