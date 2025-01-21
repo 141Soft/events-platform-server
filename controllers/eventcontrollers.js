@@ -5,16 +5,22 @@ export const postEvent = async () => {
 }
 
 
-//This will eventually take search params
 export const getEvents = async (queryParams) => {
-
-    const searchParams = {...queryParams};
-    searchParams.paginate.toLowerCase() === "true" ? searchParams.paginate = true : searchParams.paginate = false;
-
     try {
-        const result = await fetchEvents(searchParams);
+        let result;
+
+        if(!queryParams){
+            result = await fetchEvents();
+        } else {
+            const searchParams = {...queryParams};
+            if(searchParams.paginate){
+                searchParams.paginate.toLowerCase() === "true" ? searchParams.paginate = true : searchParams.paginate = false;
+            }
+            result = await fetchEvents(searchParams);
+        }
+
         return result;
-        
+
     } catch (error) {
         throw error;
     }
