@@ -54,34 +54,17 @@ export const fetchEvents = async(searchParams) => {
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
             `);
-        
-        //Duplicates some code
-        //This route is for a blank 'fetch everything' query, not sure if necessary
-        if(!searchParams){
-            const groupedEvents = new Map();
-            for(const event of result){
-                if(!groupedEvents.has(event.id)) {
-                    const newEvent = { ...event, tags: [event.tag] };
-                    delete newEvent.tag;
-                    groupedEvents.set(event.id, newEvent);
-                } else {
-                    const matchEvent = groupedEvents.get(event.id);
-                    matchEvent.tags.push(event.tag);
-                }
-            }
-            return{ events: Array.from(groupedEvents.values()) }
-        }
 
-        if(searchParams.id){
+        if(searchParams?.id){
             const id = parseInt(searchParams.id);
             result = result.filter(e => e.id === id);
             if(result.length === 0){ return false }
         }
-        if(searchParams.name){
+        if(searchParams?.name){
             result = result.filter(e => e.eventName.toLowerCase().includes(searchParams.name.toLowerCase()))
             if(result.length === 0){ return false }
         }
-        if(searchParams.tag){
+        if(searchParams?.tag){
             result = result.filter(e => e.tag === searchParams.tag)
             if(result.length === 0){ return false }
         }
@@ -99,7 +82,7 @@ export const fetchEvents = async(searchParams) => {
             }
         }
 
-        if(searchParams.paginate){
+        if(searchParams?.paginate){
             let eventsArr = Array.from(groupedEvents.values());
             const page = parseInt(searchParams.page) || 1;
             const limit = parseInt(searchParams.limit) || 10;
