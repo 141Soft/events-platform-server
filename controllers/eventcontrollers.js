@@ -7,20 +7,12 @@ export const postEvent = async () => {
 
 export const getEvents = async (queryParams) => {
     try {
-        let result;
-
-        if(!queryParams){
-            result = await fetchEvents();
+        if(queryParams?.paginate){
+            queryParams.paginate.toLowerCase() === "true" ? queryParams.paginate = true : queryParams.paginate = false;
+            return await fetchEvents(queryParams);
         } else {
-            const searchParams = {...queryParams};
-            if(searchParams.paginate){
-                searchParams.paginate.toLowerCase() === "true" ? searchParams.paginate = true : searchParams.paginate = false;
-            }
-            result = await fetchEvents(searchParams);
+            return await fetchEvents();
         }
-
-        return result;
-
     } catch (error) {
         throw error;
     }
