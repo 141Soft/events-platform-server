@@ -32,6 +32,7 @@ export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagar
 
     } catch(error) {
         if(connection){ await connection.rollback(); }
+        console.error(error);
         throw error;
     } finally {
         if(connection) { connection.release(); }
@@ -48,7 +49,7 @@ export const fetchEvents = async(searchParams) => {
         connection = await db.pool.getConnection();
 
         let query = `
-            SELECT e.*, et.eventTag AS tag
+            SELECT e.*, GROUP_CONCAT(et.eventTag SEPARATOR ',') AS tags
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
         `;
@@ -69,44 +70,51 @@ export const fetchEvents = async(searchParams) => {
             params.push(searchParams.tag);
         }
         if(conditions.length > 0){
-            query+= ` WHERE ${conditions.join(' AND ')}`;
+            query += ` WHERE ${conditions.join(' AND ')}`;
+        }
+
+        query += ' GROUP BY e.id'
+
+        if(searchParams?.paginate){
+            const page = parseInt(searchParams.page) || 1;
+            const limit = parseInt(searchParams.limit) || 10;
+            const offset = (page - 1) * limit;
+
+            query += ' LIMIT ? OFFSET ?';
+            params.push(limit, offset)
         }
 
         let [result] = await connection.query(query, params);
 
-        const groupedEvents = new Map();
-
         for(const event of result){
-            if(!groupedEvents.has(event.id)) {
-                const newEvent = { ...event, tags: [event.tag] };
-                delete newEvent.tag;
-                groupedEvents.set(event.id, newEvent);
-            } else {
-                const matchEvent = groupedEvents.get(event.id);
-                matchEvent.tags.push(event.tag);
-            }
+            event.tags = event.tags.split(',');
         }
 
         if(searchParams?.paginate){
-            let eventsArr = Array.from(groupedEvents.values());
-            const page = parseInt(searchParams.page) || 1;
-            const limit = parseInt(searchParams.limit) || 10;
-            const start = (page - 1) * limit;
-            const end = start + limit;
-            const count = eventsArr.length;
-            const totalPages = Math.ceil(count / limit);
-            const paginatedEvents = eventsArr.slice(start, end);
+            let countQuery = 'SELECT COUNT(DISTINCT e.id) as totalCount FROM events e';
+            if(conditions.length > 0){
+                countQuery += ` WHERE ${conditions.join(' AND ')}`;
+            }
+            const [countResult] = await connection.query(countQuery, params.slice(0, conditions.length));
+            const count = countResult[0].totalCount;
+            const totalPages = Math.ceil(count / (searchParams?.limit || 10));
 
             return {
-                events: paginatedEvents,
-                pagination: { page, limit, count, totalPages }
+                events: result,
+                pagination: {
+                    page: parseInt(searchParams.page) || 1,
+                    limit: parseInt(searchParams.limit) || 10,
+                    count,
+                    totalPages
+                }
             }
         } else {
-            return{
-                events: Array.from(groupedEvents.values())
-            } 
+            return {
+                events: result
+            }
         }
     } catch(error) {
+        console.error('Error fetching events:', error);
         throw error;
     } finally {
         if(connection) { connection.release(); }
