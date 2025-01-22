@@ -35,7 +35,6 @@ class DBHelper {
             connection = await this.pool.getConnection();
             return await callback(connection);
         } catch(error) {
-            console.error(error);
             throw error;
         } finally {
             connection.release();
@@ -66,7 +65,6 @@ class DBHelper {
             console.log('Schema complete.');
             return true;
         } catch (error) {
-            console.error(error);
             throw error;
         } finally {
             connection.release();

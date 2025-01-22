@@ -32,7 +32,6 @@ export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagar
 
     } catch(error) {
         if(connection){ await connection.rollback(); }
-        console.error(error);
         throw error;
     } finally {
         if(connection) { connection.release(); }
@@ -108,7 +107,6 @@ export const fetchEvents = async(searchParams) => {
             } 
         }
     } catch(error) {
-        console.error('Error fetching events:', error);
         throw error;
     } finally {
         if(connection) { connection.release(); }

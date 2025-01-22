@@ -25,7 +25,17 @@ app.get('/events', async (req, res, next) => {
 })
 
 //Error Handling
+
+app.use((err, req, res, next) => {
+    if(err.code === "ECONNREFUSED"){
+        console.error(err);
+        res.status(503).send({ error: 'Database not initialised' });
+    } else {
+        next(err);
+    }
+})
+
 app.use((err, req, res, next) => {
     console.error(err);
-    res.status(500).send({ error: 'Error!' })
+    res.status(500).send({ error: 'Internal Server Error!' });
 })
