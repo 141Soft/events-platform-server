@@ -41,7 +41,6 @@ export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagar
 
 // seachParams object takes: id, tag, name, paginate, page, limit
 // Needs date parsing and filtering by date
-// Investigate how much of the filtering can be moved to the SQL query
 export const fetchEvents = async(searchParams) => {
 
     let connection;
@@ -49,25 +48,32 @@ export const fetchEvents = async(searchParams) => {
     try {
         connection = await db.pool.getConnection();
 
-        let [result] = await connection.query(`
+        let query = `
             SELECT e.*, et.eventTag AS tag
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
-            `);
+        `;
+
+        let conditions = [];
+        let params = [];
 
         if(searchParams?.id){
-            const id = parseInt(searchParams.id);
-            result = result.filter(e => e.id === id);
-            if(result.length === 0){ return false }
+            conditions.push('e.id = ?');
+            params.push(parseInt(searchParams.id));
         }
         if(searchParams?.name){
-            result = result.filter(e => e.eventName.toLowerCase().includes(searchParams.name.toLowerCase()))
-            if(result.length === 0){ return false }
+            conditions.push('LOWER(e.eventName) LIKE ?');
+            params.push(`%${searchParams.name.toLowerCase()}%`);
         }
         if(searchParams?.tag){
-            result = result.filter(e => e.tag === searchParams.tag)
-            if(result.length === 0){ return false }
+            conditions.push('et.eventTag = ?');
+            params.push(searchParams.tag);
         }
+        if(conditions.length > 0){
+            query+= ` WHERE ${conditions.join(' AND ')}`;
+        }
+
+        let [result] = await connection.query(query, params);
 
         const groupedEvents = new Map();
 
