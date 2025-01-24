@@ -30,10 +30,10 @@ export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagar
 
         await connection.commit();
 
-    } catch(error) {
+    } catch(err) {
         if(connection){ await connection.rollback(); }
-        console.error(error);
-        throw error;
+        console.error(err);
+        throw err;
     } finally {
         if(connection) { connection.release(); }
     }
@@ -113,10 +113,30 @@ export const fetchEvents = async(searchParams) => {
                 events: result
             }
         }
-    } catch(error) {
-        console.error('Error fetching events:', error);
-        throw error;
+    } catch(err) {
+        console.error('Error fetching events:', err);
+        throw err;
     } finally {
         if(connection) { connection.release(); }
     }
+}
+
+export const fetchTags = async() => {
+
+    let connection;
+
+    try{
+        connection = await db.pool.getConnection();
+
+        let [result] = await connection.query(`
+            SELECT DISTINCT eventTag FROM eventTags;
+        `)
+
+        const tags = result.map((tag) => tag = tag.eventTag);
+        return { tags };
+    } catch(err) {
+        throw err;
+    } finally {
+        if(connection) { connection.release(); }
+    }   
 }

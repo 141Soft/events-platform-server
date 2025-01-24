@@ -1,13 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import { getEvents, postEvent } from './controllers/eventcontrollers.js';
+import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
 
 
 //Middleware
-app.use(cors());
+app.use(cors({
+    origin:'http://localhost:5173'
+}));
 
 
 //Routes
@@ -19,8 +21,17 @@ app.get('/events', async (req, res, next) => {
     try {
         const response = await getEvents(req.query);
         res.send(response);
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        next(err);
+    }
+})
+
+app.get('/events/tags', async (req, res, next) => {
+    try {
+        const response = await getTags();
+        res.send(response);
+    } catch (err) {
+        next(err)
     }
 })
 
