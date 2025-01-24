@@ -70,7 +70,7 @@ export const fetchEvents = async(searchParams) => {
             params.push(searchParams.tag);
         }
         if(conditions.length > 0){
-            query += ` WHERE ${conditions.join(' AND ')}`;
+            query += `WHERE ${conditions.join(' AND ')}`;
         }
 
         query += ' GROUP BY e.id'
@@ -91,7 +91,11 @@ export const fetchEvents = async(searchParams) => {
         }
 
         if(searchParams?.paginate){
-            let countQuery = 'SELECT COUNT(DISTINCT e.id) as totalCount FROM events e';
+            let countQuery = `
+                SELECT COUNT(DISTINCT e.id) as totalCount
+                FROM events e
+                LEFT JOIN eventTags et ON e.id = et.eventID
+            `;
             if(conditions.length > 0){
                 countQuery += ` WHERE ${conditions.join(' AND ')}`;
             }
