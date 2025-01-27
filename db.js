@@ -21,9 +21,11 @@ class DBHelper {
         return this.pool = mysql2.createPool(config);
     }
 
-    closePool() {
-        this.pool.end;
-        this.pool = null;
+    async closePool() {
+        if(this.pool){
+            await this.pool.end();
+            this.pool = null;
+        }
     }
 
     //Allows multiple operations to be carried out on the same connection before releasing
@@ -71,7 +73,7 @@ class DBHelper {
         }
     }
 
-    async seed(schemaPath, seedPath) {
+    async seed(schemaPath, seedPath, logging) {
         if(this.pool === null){
             console.error('Connection pool not initialized.');
             return false
@@ -91,12 +93,19 @@ class DBHelper {
             ]);
             const queries = [...parseSQL(schemaFile), ...parseSQL(seedFile)];
 
-            console.log(`Seeding database with ${queries.length} queries...`);
+            if(logging){
+                console.log(`Seeding database with ${queries.length} queries...`);
+            };
+            
             for(const query of queries){
                 const result = await connection.query(query);
-                console.log(result);
+                if(logging){
+                    console.log(result);
+                };
             }
-            console.log('Seeding complete!');
+            if(logging){
+                console.log('Seeding complete!');
+            }
             return true;
         } catch(error) {
             console.error(error);

@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS eventParticipants (
     eventID INT NOT NULL,
     userID INT NOT NULL,
     PRIMARY KEY(eventID, userID)
-)
+);
 
 CREATE TABLE IF NOT EXISTS users (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     userEmail VARCHAR(100) NOT NULL,
     userPassword VARCHAR(100) NOT NULL,
     isAdmin INT
-)
+);
