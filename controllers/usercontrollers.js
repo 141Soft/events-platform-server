@@ -57,13 +57,13 @@ export const loginUser = async (userParams) => {
         //Check user exists
         const user = await fetchUser(userParams);
         if(!user[0]?.userName){
-            throw new Error("User does not exist");
+            throw new Error("Invalid credentials");
         }
 
         const validate = await checkPassword(userParams.password, user[0].userPassword);
-        
+
         if(!validate){
-            throw new Error("Invalid password");
+            throw new Error("Invalid credentials");
         }
 
         return {

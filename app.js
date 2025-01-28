@@ -112,7 +112,7 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    if(err.message === "User does not exist" || err.message === "Invalid password"){
+    if(err.message === "Invalid credentials"){
         console.error(err);
         res.status(404).send({ error:err.message })
     } else {

@@ -159,7 +159,7 @@ describe("POST /users", () => {
     })
 })
 
-describe.only("GET /users/login", () => {
+describe("GET /users/login", () => {
     test("returns status code 200", async () => {
         const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'buildStrong1'};
         const res = await request(app)
