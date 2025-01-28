@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS eventParticipants (
 CREATE TABLE IF NOT EXISTS users (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     userEmail VARCHAR(100) NOT NULL,
+    userName VARCHAR(100) NOT NULL,
     userPassword VARCHAR(100) NOT NULL,
+    isVerified INT,
     isAdmin INT
 );

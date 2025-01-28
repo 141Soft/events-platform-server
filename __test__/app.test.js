@@ -103,3 +103,25 @@ describe("/events/tags", () => {
         res.body.tags.forEach(tag => expect(typeof tag).toBe("string"))
     })
 });
+
+describe("/users", () => {
+    test("Returns status code 200", async () => {
+        const res = await request(app).get('/users?name=AliceWonder');
+        expect(res.status).toBe(200);
+    });
+    test("Returns status code 404 when passed no params", async () => {
+        let res = await request(app).get('/users');
+        expect(res.status).toBe(404);
+    });
+    test("Returns status code 404 when no matching users", async () => {
+        let res = await request(app).get('/users?name=abcde&email=fghij');
+        expect(res.status).toBe(404);
+    })
+    test("Returns correct user data when passed name", async () => {
+        const res = await request(app).get('/users?name=AliceWonder');
+        expect(res.body.user).toMatchObject({
+            userName:"AliceWonder",
+            userEmail:"alice@example.com"
+        })
+    })
+})
