@@ -1,4 +1,5 @@
 import { fetchUser, insertUser } from "../models/usermodels.js";
+import { checkPassword } from "../utils/hashing.js";
 
 export const getUser = async (userParams) => {
     try {
@@ -47,6 +48,34 @@ export const postUser = async (userParams) => {
             }
         }
     } catch(err) {
+        throw err;
+    }
+}
+
+export const loginUser = async (userParams) => {
+    try {
+        //Check user exists
+        const user = await fetchUser(userParams);
+        if(!user[0]?.userName){
+            throw new Error("User does not exist");
+        }
+
+        const validate = await checkPassword(userParams.password, user[0].userPassword);
+        
+        if(!validate){
+            throw new Error("Invalid password");
+        }
+
+        return {
+            status: 'success',
+            user: {
+                userName: user[0].userName,
+                userEmail: user[0].userEmail,
+                isAdmin: user[0].isAdmin,
+                isVerified: user[0].isVerified
+            }
+        }
+    } catch (err) {
         throw err;
     }
 }

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
-import { getUser, postUser } from './controllers/usercontrollers.js';
+import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
@@ -47,7 +47,18 @@ app.get('/users', async (req, res, next) => {
     }
 })
 
+app.get('/users/login', async (req, res, next) => {
+    
+    try {
+        const response = await loginUser(req.body);
+        res.send(response);
+    } catch(err) {
+        next(err);
+    }
+})
+
 app.post('/users', async (req, res, next) => {
+    
     try {
         const response = await postUser(req.body);
         res.status(201).send(response);
@@ -95,6 +106,15 @@ app.use((err, req, res, next) => {
     } else if(err.message === "Could not create user"){
         console.error(err);
         res.status(500).send({ error: err.message })
+    } else {
+        next(err);
+    }
+})
+
+app.use((err, req, res, next) => {
+    if(err.message === "User does not exist" || err.message === "Invalid password"){
+        console.error(err);
+        res.status(404).send({ error:err.message })
     } else {
         next(err);
     }

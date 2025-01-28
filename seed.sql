@@ -56,7 +56,7 @@ VALUES('1', 'img/event1_thumb.jpg'),
 
 INSERT INTO users (userEmail, userName, userPassword, isVerified, isAdmin) VALUES
 ('alice@example.com', 'AliceWonder', 'securePassword1', 1, 0),
-('bob@example.com', 'BobBuilder', 'buildStrong1', 0, 0),
+('bob@example.com', 'BobBuilder', '$2a$10$3R8q1einVQ5wONKxyIBaQOTK2rIVq/uQyFv0jRf42jaT56.b9vahu', 0, 0),
 ('carol@example.com', 'CarolSinger', 'melody2023', 1, 0),
 ('david@example.com', 'DavidExplorer', 'adventure4all', 1, 1),
 ('eva@example.com', 'EvaCreator', 'createInnovate', 1, 0);

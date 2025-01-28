@@ -158,3 +158,48 @@ describe("POST /users", () => {
         })
     })
 })
+
+describe.only("GET /users/login", () => {
+    test("returns status code 200", async () => {
+        const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'buildStrong1'};
+        const res = await request(app)
+                    .get('/users/login')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.status).toBe(200);
+    });
+    test("returns status code 404 on no user found", async () => {
+        const payload = {name: "invalid", email: 'ivalid@example.com', password: 'password123'};
+        const res = await request(app)
+                    .get('/users/login')
+                    .send(payload)
+                    .set('Content-type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.status).toBe(404);
+    });
+    test("returns status code 404 on invalid password", async () => {
+        const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'password123'};
+        const res = await request(app)
+                    .get('/users/login')
+                    .send(payload)
+                    .set('Content-type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.status).toBe(404);
+    });
+    test("returns correct user info on successful login", async () => {
+        const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'buildStrong1'};
+        const res = await request(app)
+                    .get('/users/login')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.body.status).toBe("success");
+        expect(res.body.user).toMatchObject({
+                userName: 'BobBuilder',
+                userEmail: 'bob@example.com',
+                isAdmin: 0,
+                isVerified: 0
+        })
+    })
+})

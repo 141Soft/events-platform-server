@@ -2,7 +2,7 @@ import { checkPassword, hashPassword } from "../utils/hashing.js";
 
 
 
-describe.only("Password hashing and validation", () => {
+describe("Password hashing and validation", () => {
     test("Returns true for valid passwords", async ()=> {
         const password = 'password123';
         const hash = await hashPassword(password, 10);
