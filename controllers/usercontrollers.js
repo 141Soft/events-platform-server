@@ -1,4 +1,4 @@
-import { fetchUser } from "../models/usermodels.js";
+import { fetchUser, insertUser } from "../models/usermodels.js";
 
 export const getUser = async (userParams) => {
     try {
@@ -25,5 +25,28 @@ export const getUser = async (userParams) => {
         };
     } catch(err) {
         throw(err)
+    }
+}
+
+export const postUser = async (userParams) => {
+    try{
+        //Check user exists
+        const userCheck = await fetchUser(userParams);
+        //If user exists throw error
+        if(userCheck[0]?.userName === userParams.name){
+            throw new Error("Username already in use");
+        } else if(userCheck[0]?.userEmail === userParams.email){
+            throw new Error("Email already in use");
+        } else {
+            //Else post user
+            const result = await insertUser(userParams);
+            if(result.status === 'success') {
+                return result;
+            } else {
+                throw new Error("Could not create user");
+            }
+        }
+    } catch(err) {
+        throw err;
     }
 }

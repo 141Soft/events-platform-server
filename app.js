@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
-import { getUser } from './controllers/usercontrollers.js';
+import { getUser, postUser } from './controllers/usercontrollers.js';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
@@ -11,6 +11,8 @@ export const port = process.env.PORT || 3000;
 app.use(cors({
     origin:'http://localhost:5173'
 }));
+
+app.use(express.json());
 
 
 //Routes
@@ -45,6 +47,15 @@ app.get('/users', async (req, res, next) => {
     }
 })
 
+app.post('/users', async (req, res, next) => {
+    try {
+        const response = await postUser(req.body);
+        res.status(201).send(response);
+    } catch(err) {
+        next(err);
+    }
+})
+
 //Error Handling
 
 app.use((err, req, res, next) => {
@@ -69,6 +80,21 @@ app.use((err, req, res, next) => {
     if(err.message === "No User Found"){
         console.error(err);
         res.status(404).send({ error: err.message});
+    } else {
+        next(err);
+    }
+})
+
+app.use((err, req, res, next) => {
+    if(err.message === "Username already in use"){
+        console.error(err);
+        res.status(404).send({ error: err.message });
+    } else if(err.message === "Email already in use"){
+        console.error(err);
+        res.status(404).send({ error: err.message });
+    } else if(err.message === "Could not create user"){
+        console.error(err);
+        res.status(500).send({ error: err.message })
     } else {
         next(err);
     }

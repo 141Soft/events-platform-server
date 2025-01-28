@@ -36,6 +36,6 @@ CREATE TABLE IF NOT EXISTS users (
     userEmail VARCHAR(100) NOT NULL,
     userName VARCHAR(100) NOT NULL,
     userPassword VARCHAR(100) NOT NULL,
-    isVerified INT,
-    isAdmin INT
+    isVerified INT NOT NULL,
+    isAdmin INT NOT NULL
 );

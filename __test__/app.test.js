@@ -116,12 +116,45 @@ describe("/users", () => {
     test("Returns status code 404 when no matching users", async () => {
         let res = await request(app).get('/users?name=abcde&email=fghij');
         expect(res.status).toBe(404);
-    })
+    });
     test("Returns correct user data when passed name", async () => {
         const res = await request(app).get('/users?name=AliceWonder');
         expect(res.body.user).toMatchObject({
             userName:"AliceWonder",
             userEmail:"alice@example.com"
+        });
+    });
+});
+
+describe("POST /users", () => {
+    test("returns status code 201", async () => {
+        const payload = {name: 'Franky', email: 'frank13@mail.com', password: 'Password123'};
+        const res = await request(app)
+                    .post('/users')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.status).toBe(201);
+    })
+    test("returns status code 404 if user already exists", async () => {
+        const payload = {name: 'AliceWonder', email: 'alice@example.com', password:'securePassword1'};
+        const res = await request(app)
+                    .post('/users')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.status).toBe(404);
+    })
+    test("returns correct username and email properties", async () => {
+        const payload = {name: 'Franky', email: 'frank13@mail.com', password: 'Password123'};
+        const res = await request(app)
+                    .post('/users')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json');
+        expect(res.body.user).toMatchObject({
+            userName: payload.name,
+            userEmail: payload.email
         })
     })
 })

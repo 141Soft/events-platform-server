@@ -1,4 +1,5 @@
 import { db } from '../db.js'
+import { hashPassword } from '../utils/hashing.js';
 
 
 // This will insert a new user into the db
@@ -6,8 +7,41 @@ import { db } from '../db.js'
 // This should check if the user credentials already exist
 // This should perform additional checks on user credentials
 // User has: id, email, name, password, isVerified, isAdmin
-export const insertUser = async (name, email, password) => {
+export const insertUser = async (userParams) => {
+    let connection;
+    try {
+        connection = await db.pool.getConnection();
 
+        const query = `
+            INSERT INTO users 
+            (userEmail, userName, userPassword, isVerified, isAdmin) 
+            VALUES(?, ?, ?, ?, ?);
+            `
+            
+        userParams.password = await hashPassword(userParams.password, 10);
+
+        const params = [userParams.email, userParams.name, userParams.password, 0, 0];
+
+        const [result] = await connection.query(query, params);
+        if(result.affectedRows === 1){
+            const [result] = await connection.query('SELECT * FROM users WHERE id = LAST_INSERT_ID();')
+            return { 
+                status: 'success', 
+                message: 'User created',
+                user: {
+                    userName: result[0].userName,
+                    userEmail: result[0].userEmail,
+                }
+            };
+        } else {
+            return { status: 'error' };
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
+    } finally {
+        if(connection){ connection.release(); }
+    }
 }
 
 // This will fetch a user's credentials from the db
@@ -39,10 +73,7 @@ export const fetchUser = async (userParams) => {
             query += `WHERE ${conditions.join(' AND ')}`;
         };
 
-        console.log(query, params);
-
         const [result] = await connection.query(query, params);
-
         return result;
     } catch(err) {
         console.error('Error fetching user', err);
