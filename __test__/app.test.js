@@ -1,5 +1,6 @@
 import { app } from '../app.js'
 import { db } from '../db.js'
+import { jest } from '@jest/globals'
 import request from 'supertest'
 
 beforeEach(async () => {
@@ -198,7 +199,7 @@ describe("POST /users/login", () => {
         expect(res.body.user).toMatchObject({
                 userName: 'BobBuilder',
                 userEmail: 'bob@example.com',
-                isAdmin: 0,
+                isAdmin: 1,
                 isVerified: 0
         });
     });

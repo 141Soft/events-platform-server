@@ -83,10 +83,18 @@ export const fetchUser = async (userParams) => {
     }
 }
 
-export const updateUser = async () => {
+export const patchUser = async (userName, valueToChange, newValue) => {
     let connection;
     try {
+        const query = `
+        UPDATE users
+        SET ? = ?
+        WHERE userName = ?;
+        `
+        const params = [valueToChange, newValue, userName];
 
+        const [result] = await connection.query(query, params);
+        return result;
     } catch (err) {
         
     } finally {

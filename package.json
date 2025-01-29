@@ -1,11 +1,12 @@
 {
   "type": "module",
   "jest": {
+    "testEnvironment": "node",
     "transform": {}
   },
   "scripts": {
     "start": "nodemon listen.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
     "prepare": "husky"
   },
   "dependencies": {

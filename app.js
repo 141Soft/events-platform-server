@@ -4,6 +4,7 @@ import session from 'express-session';
 const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
 import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
+import { patchUser } from './models/usermodels.js';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
@@ -43,7 +44,7 @@ const isAuthenticated = (req, res, next) => {
 }
 
 const isAdmin = (req, res, next) => {
-    if(req.session.user.admin){
+    if(req.session?.user?.admin === 1){
         next();
     } else {
         res.status(403).send({ error: 'Access Denied'});
@@ -107,6 +108,16 @@ app.post('/users', async (req, res, next) => {
         const response = await postUser(req.body);
         res.status(201).send(response);
     } catch(err) {
+        next(err);
+    }
+})
+
+app.patch('/users/update', isAdmin, async (req, res, next) => {
+    try {
+        const response = await patchUser(req.query);
+        console.log(response);
+        res.send(response); 
+    } catch(err){
         next(err);
     }
 })

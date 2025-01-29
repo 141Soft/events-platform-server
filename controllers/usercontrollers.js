@@ -79,3 +79,12 @@ export const loginUser = async (userParams) => {
         throw err;
     }
 }
+
+export const updateUser = async (userName, valueToChange, newValue) => {
+    try {
+        const result = await updateUser(userName, valueToChange, newValue);
+        return result;
+    } catch (err) {
+        throw err;
+    }
+}
