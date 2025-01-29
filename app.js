@@ -1,11 +1,12 @@
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
+const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
 import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
-
 
 //Middleware
 app.use(cors({
@@ -14,10 +15,45 @@ app.use(cors({
 
 app.use(express.json());
 
+const options = {
+    host: 'localhost',
+    port: 3306,
+    user: 'test',
+    password: 'secret',
+    database: 'session_test'
+};
+
+const sessionStore = new MySQLStore(options);
+
+app.use(session({
+    key: 'session_cookie_name',
+    secret: 'secret-key',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } //Set to true when using HTTPS
+}))
+
+const isAuthenticated = (req, res, next) => {
+    if(req.session.user) {
+        next();
+    } else {
+        res.status(401).send({ error: 'Authentication required'});
+    }
+}
+
+const isAdmin = (req, res, next) => {
+    if(req.session.user.admin){
+        next();
+    } else {
+        res.status(403).send({ error: 'Access Denied'});
+    }
+}
+
 
 //Routes
 app.get('/', (req, res) => {
-    res.send({ msg: 'Success'})
+    res.send({ msg: 'Success'}) 
 });
 
 app.get('/events', async (req, res, next) => {
@@ -47,10 +83,19 @@ app.get('/users', async (req, res, next) => {
     }
 })
 
-app.get('/users/login', async (req, res, next) => {
-    
+app.post('/users/login', async (req, res, next) => {
     try {
         const response = await loginUser(req.body);
+        await new Promise((resolve, reject) => {
+            req.session.regenerate((err) => {
+                if(err){ return reject(err) };
+                req.session.user = {
+                    username: response.user.userName,
+                    admin: response.user.isAdmin,
+                };
+                resolve();
+            })
+        })
         res.send(response);
     } catch(err) {
         next(err);
@@ -58,7 +103,6 @@ app.get('/users/login', async (req, res, next) => {
 })
 
 app.post('/users', async (req, res, next) => {
-    
     try {
         const response = await postUser(req.body);
         res.status(201).send(response);
@@ -66,6 +110,15 @@ app.post('/users', async (req, res, next) => {
         next(err);
     }
 })
+
+//Test routes
+app.get('/secure-route', isAuthenticated, (req, res) => {
+    res.send({ message: 'Secure route successful!' });
+});
+
+app.get('/admin-route', isAdmin, (req, res) => {
+    res.send({ message: 'Admin route successful! '});
+});
 
 //Error Handling
 

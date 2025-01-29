@@ -82,3 +82,14 @@ export const fetchUser = async (userParams) => {
         if(connection) { connection.release(); }
     }
 }
+
+export const updateUser = async () => {
+    let connection;
+    try {
+
+    } catch (err) {
+        
+    } finally {
+        if(connection) { connection.release(); }
+    }
+}
