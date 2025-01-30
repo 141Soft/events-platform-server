@@ -1,5 +1,6 @@
 import { app } from '../app.js'
 import { db } from '../db.js'
+import { jest } from '@jest/globals'
 import request from 'supertest'
 
 beforeEach(async () => {
@@ -159,11 +160,11 @@ describe("POST /users", () => {
     })
 })
 
-describe("GET /users/login", () => {
+describe("POST /users/login", () => {
     test("returns status code 200", async () => {
         const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'buildStrong1'};
         const res = await request(app)
-                    .get('/users/login')
+                    .post('/users/login')
                     .send(payload)
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json');
@@ -172,7 +173,7 @@ describe("GET /users/login", () => {
     test("returns status code 404 on no user found", async () => {
         const payload = {name: "invalid", email: 'ivalid@example.com', password: 'password123'};
         const res = await request(app)
-                    .get('/users/login')
+                    .post('/users/login')
                     .send(payload)
                     .set('Content-type', 'application/json')
                     .set('Accept', 'application/json');
@@ -181,7 +182,7 @@ describe("GET /users/login", () => {
     test("returns status code 404 on invalid password", async () => {
         const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'password123'};
         const res = await request(app)
-                    .get('/users/login')
+                    .post('/users/login')
                     .send(payload)
                     .set('Content-type', 'application/json')
                     .set('Accept', 'application/json');
@@ -190,7 +191,7 @@ describe("GET /users/login", () => {
     test("returns correct user info on successful login", async () => {
         const payload = {name: 'BobBuilder', email: 'bob@example.com', password: 'buildStrong1'};
         const res = await request(app)
-                    .get('/users/login')
+                    .post('/users/login')
                     .send(payload)
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json');
@@ -198,8 +199,8 @@ describe("GET /users/login", () => {
         expect(res.body.user).toMatchObject({
                 userName: 'BobBuilder',
                 userEmail: 'bob@example.com',
-                isAdmin: 0,
+                isAdmin: 1,
                 isVerified: 0
-        })
-    })
-})
+        });
+    });
+});
