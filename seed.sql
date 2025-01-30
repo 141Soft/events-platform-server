@@ -60,3 +60,6 @@ INSERT INTO users (userEmail, userName, userPassword, isVerified, isAdmin) VALUE
 ('carol@example.com', 'CarolSinger', 'melody2023', 1, 0),
 ('david@example.com', 'DavidExplorer', 'adventure4all', 1, 1),
 ('eva@example.com', 'EvaCreator', 'createInnovate', 1, 0);
+
+INSERT INTO eventParticipants (eventID, userIP) VALUES
+(2, '::ffff:127.0.0.1');

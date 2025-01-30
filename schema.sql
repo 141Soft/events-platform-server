@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS eventImages (
 
 CREATE TABLE IF NOT EXISTS eventParticipants (
     eventID INT NOT NULL,
-    userID INT NOT NULL,
-    PRIMARY KEY(eventID, userID)
+    userIP VARCHAR(100) NOT NULL,
+    PRIMARY KEY(eventID, userIP)
 );
 
 CREATE TABLE IF NOT EXISTS users (

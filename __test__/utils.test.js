@@ -1,7 +1,5 @@
 import { checkPassword, hashPassword } from "../utils/hashing.js";
 
-
-
 describe("Password hashing and validation", () => {
     test("Returns true for valid passwords", async ()=> {
         const password = 'password123';

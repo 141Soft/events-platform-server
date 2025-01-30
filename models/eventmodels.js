@@ -144,3 +144,24 @@ export const fetchTags = async() => {
         if(connection) { connection.release(); }
     }   
 }
+
+export const updateEventParticipants = async (eventID, userIP) => {
+    let connection;
+    try {
+        connection = await db.pool.getConnection()
+
+        const query = `
+            INSERT INTO eventParticipants
+            (eventID, userIP)
+            VALUES(?, ?);
+        `
+        const params = [eventID, userIP];
+
+        const [result] = await connection.query(query, params);
+        return result;
+    } catch(err) {
+        throw err;
+    } finally {
+        if(connection) { connection.release(); }
+    }
+}

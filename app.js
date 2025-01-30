@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
-import { getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
+import { addEventParticipant, getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 import { patchUser } from './models/usermodels.js';
 
@@ -24,7 +24,7 @@ const options = {
     database: 'session_test'
 };
 
-const sessionStore = new MySQLStore(options);
+export const sessionStore = new MySQLStore(options);
 
 app.use(session({
     key: 'session_cookie_name',
@@ -33,7 +33,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false } //Set to true when using HTTPS
-}))
+}));
 
 const isAuthenticated = (req, res, next) => {
     if(req.session.user) {
@@ -115,9 +115,18 @@ app.post('/users', async (req, res, next) => {
 app.patch('/users/update', isAdmin, async (req, res, next) => {
     try {
         const response = await patchUser(req.query);
-        console.log(response);
         res.send(response); 
     } catch(err){
+        next(err);
+    }
+})
+
+app.post('/events/participants', async (req, res, next) => {
+    try {   
+        console.log(req.query.name);
+        const response = await addEventParticipant(req.query.name, req.ip);
+        res.send(response);
+    } catch(err) {
         next(err);
     }
 })

@@ -1,6 +1,6 @@
 import { app } from '../app.js'
 import { db } from '../db.js'
-import { jest } from '@jest/globals'
+import { sessionStore } from '../app.js';
 import request from 'supertest'
 
 beforeEach(async () => {
@@ -9,6 +9,7 @@ beforeEach(async () => {
 
 afterAll(async ()=> {
     await db.closePool();
+    await sessionStore.close();
 });
 
 describe("/", ()=> {
@@ -204,3 +205,18 @@ describe("POST /users/login", () => {
         });
     });
 });
+
+describe("POST /events/participants", () => {
+    test("returns status code 200", async () => {
+        const res = await request(app)
+                    .post('/events/participants?name=Bakesale')
+                    .set('X-Forwarded-For', '192.168.2.1');
+        expect(res.status).toBe(200);
+    })
+    test("returns status code 500 for duplicate entry", async () => {
+        const res = await request(app)
+                    .post('/events/participants?name=Art%20Exhibition')
+                    .set('X-Forwarded-For', '192.168.2.1');
+        expect(res.status).toBe(500);
+    })
+})
