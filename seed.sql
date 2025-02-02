@@ -1,14 +1,14 @@
-INSERT INTO events (eventName, eventDate, eventDesc, eventStub, eventThumb) 
-VALUES('Bakesale', '2025-02-28 13:11:00', 'A bakesale for the local church group', 'A bakesale', 'URL'),
-('Art Exhibition', '2025-03-15 18:00:00', 'Local artists showcase their work', 'Art Exhibit', 'URL'),
-('Charity Run', '2025-04-05 08:00:00', '5K run to raise money for cancer research', 'Charity Run', 'URL'),
-('Summer Concert', '2025-06-21 19:30:00', 'Live music in the park', 'Summer Concert', 'URL'),
-('Book Fair', '2025-07-12 10:00:00', 'Annual event for book lovers', 'Book Fair', 'URL'),
-('Food Festival', '2025-08-09 12:00:00', 'Celebrating culinary diversity', 'Food Fest', 'URL'),
-('Halloween Party', '2025-10-31 20:00:00', 'Costume contest and spooky fun', 'Halloween Party', 'URL'),
-('Winter Market', '2025-12-13 14:00:00', 'Local crafts and holiday shopping', 'Winter Market', 'URL'),
-('New Year Gala', '2026-01-01 21:00:00', 'Celebrate the new year with dance and dinner', 'New Year Gala', 'URL'),
-('Easter Egg Hunt', '2026-04-04 10:00:00', 'Family-friendly event with games and prizes', 'Easter Hunt', 'URL');
+INSERT INTO events (eventName, eventDate, eventDesc, eventStub, eventThumb, eventDuration) 
+VALUES('Bakesale', '2025-02-28T13:11:00', 'A bakesale for the local church group', 'A bakesale', 'URL', 1),
+('Art Exhibition', '2025-03-15T18:00:00', 'Local artists showcase their work', 'Art Exhibit', 'URL', 2),
+('Charity Run', '2025-04-05T08:00:00', '5K run to raise money for cancer research', 'Charity Run', 'URL', 3),
+('Summer Concert', '2025-06-21T19:30:00', 'Live music in the park', 'Summer Concert', 'URL', 1),
+('Book Fair', '2025-07-12T10:00:00', 'Annual event for book lovers', 'Book Fair', 'URL', 2),
+('Food Festival', '2025-08-09T12:00:00', 'Celebrating culinary diversity', 'Food Fest', 'URL', 1),
+('Halloween Party', '2025-10-31T20:00:00', 'Costume contest and spooky fun', 'Halloween Party', 'URL', 2),
+('Winter Market', '2025-12-13T14:00:00', 'Local crafts and holiday shopping', 'Winter Market', 'URL', 1),
+('New Year Gala', '2026-01-01T21:00:00', 'Celebrate the new year with dance and dinner', 'New Year Gala', 'URL', 1),
+('Easter Egg Hunt', '2026-04-04T10:00:00', 'Family-friendly event with games and prizes', 'Easter Hunt', 'URL', 1);
 
 INSERT INTO eventTags (eventID, eventTag)
 VALUES('1', 'food'), ('1', 'charity'), ('1', 'community'),

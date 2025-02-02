@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS events (
     eventDate DATETIME NOT NULL,
     eventDesc TEXT NOT NULL,
     eventStub TEXT NOT NULL,
-    eventThumb VARCHAR(100) NOT NULL
+    eventThumb VARCHAR(100) NOT NULL,
+    eventDuration INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS eventTags (

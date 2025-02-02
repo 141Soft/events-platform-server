@@ -1,41 +1,51 @@
 import { db } from '../db.js'
 
-export const insertEvent = async (name, date, desc, stub, thumb, imgarray, tagarray) => {
+export const insertEvent = async (event, path) => {
 
-    let id;
     let connection;
 
     try {
         connection = await db.pool.getConnection();
-        await connection.beginTransaction();
 
-        const [result] = await connection.query(
-            'INSERT INTO events (eventName, eventDate, eventDesc, eventStub, eventThumb) VALUES(?, ?, ?, ?, ?)',
-            [name, date, desc, stub, thumb]);
-        id = result.insertId;
+        const query = `
+            INSERT INTO events (eventName, eventDate, eventDesc, eventStub, eventThumb, eventDuration)
+            VALUES (?,?,?,?,?,?);
+        `
+        const values = [event.eventName, event.eventDate, event.eventDesc, event.eventStub, path, event.eventDuration];
 
-        for(const tag of tagarray) {
-            await connection.query(
-                'INSERT INTO eventTags (eventID, eventTag) VALUES (?, ?)',
-                [id, tag]
-            );
-        }
+        let [result] = await connection.query(query, values);
 
-        for(const img of imgarray) {
-            await connection.query(
-                'INSERT INTO eventImages (eventID, imgurl) VALUES (?, ?)',
-                [id, img]
-            );
-        }
-
-        await connection.commit();
-
+        return result.insertId;
     } catch(err) {
-        if(connection){ await connection.rollback(); }
-        console.error(err);
         throw err;
     } finally {
-        if(connection) { connection.release(); }
+        if(connection){ connection.release(); }
+    };
+}
+
+export const insertTags = async (id, tags) => {
+    let connection;
+
+    try{
+
+        connection = await db.pool.getConnection();
+
+        const query = `
+            INSERT INTO eventTags (eventID, eventTag)
+            VALUES ? ;
+        `;
+
+        const tagArr = tags.split(',');
+
+        const values = tagArr.map(tag => [id, tag]);
+        
+        const [result] = await connection.query(query, [values]);
+
+        return result;
+    } catch (err) {
+        throw err;
+    } finally {
+        if(connection){ connection.release(); }
     }
 }
 

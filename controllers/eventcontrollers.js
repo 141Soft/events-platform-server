@@ -1,14 +1,22 @@
-import {insertEvent, fetchEvents, fetchTags, updateEventParticipants} from '../models/eventmodels.js';
+import {insertEvent, fetchEvents, fetchTags, updateEventParticipants, insertTags} from '../models/eventmodels.js';
 
-export const postEvent = async () => {
-    
+export const postEvent = async (event, path) => {
+    try {
+        const eventID = await insertEvent(event, path);
+        const result = await insertTags(eventID, event.eventTags);
+        return result;
+    } catch(err) {
+        throw err;
+    };
 }
 
 
 export const getEvents = async (queryParams) => {
     try {
         queryParams?.paginate?.toLowerCase() === "true" ? queryParams.paginate = true : queryParams.paginate = false;
-        return await fetchEvents(queryParams);
+        const result = await fetchEvents(queryParams);
+        console.log(result);
+        return result;
     } catch (err) {
         throw err;
     }

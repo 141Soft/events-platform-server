@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fs from 'fs/promises';
 const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
 import { addEventParticipant, getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
@@ -11,7 +16,8 @@ export const port = process.env.PORT || 3000;
 
 //Middleware
 app.use(cors({
-    origin:'http://localhost:5173'
+    origin:'http://localhost:5173',
+    credentials: true,
 }));
 
 app.use(express.json());
@@ -32,8 +38,33 @@ app.use(session({
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } //Set to true when using HTTPS
+    cookie: { 
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24,
+     } //Set to true when using HTTPS
 }));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        try{
+            const uploadDir = path.join(__dirname, 'uploads');
+            await fs.mkdir(uploadDir, { recursive: true });
+            cb(null, uploadDir);
+        } catch(err) {
+            console.error(err);
+            cb(err);
+        }
+    },
+    filename: async (req, file, cb) => {
+        const suffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + suffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
 
 const isAuthenticated = (req, res, next) => {
     if(req.session.user) {
@@ -125,6 +156,22 @@ app.post('/events/participants', async (req, res, next) => {
     try {   
         console.log(req.query.name);
         const response = await addEventParticipant(req.query.name, req.ip);
+        res.send(response);
+    } catch(err) {
+        next(err);
+    }
+})
+
+app.post('/events', isAdmin, upload.single('image'), async (req, res, next) => {
+    if(!req.file) {
+        return res.status(400).send('No file attached');
+    }
+    try {
+        const relativePath = path.relative(__dirname, req.file.path);
+        console.log(relativePath);
+
+        const response = await postEvent(req.body, relativePath);
+
         res.send(response);
     } catch(err) {
         next(err);
