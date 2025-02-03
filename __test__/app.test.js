@@ -8,9 +8,9 @@ beforeEach(async () => {
 });
 
 afterAll(async ()=> {
+    await db.schema('./schema.sql');
     await db.closePool();
     await sessionStore.close();
-    await db.schema('./schema.sql');
 });
 
 describe("/", ()=> {
