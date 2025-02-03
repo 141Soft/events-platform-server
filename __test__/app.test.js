@@ -10,6 +10,7 @@ beforeEach(async () => {
 afterAll(async ()=> {
     await db.closePool();
     await sessionStore.close();
+    await db.schema('./schema.sql');
 });
 
 describe("/", ()=> {

@@ -181,7 +181,6 @@ app.get('/events/images', async(req, res, next) => {
     };
     try{
         const path = req.query.path;
-        console.log(path);
         res.sendFile(path, options);
     } catch(err) {
         next(err);
