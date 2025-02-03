@@ -153,8 +153,7 @@ app.patch('/users/update', isAdmin, async (req, res, next) => {
 })
 
 app.post('/events/participants', async (req, res, next) => {
-    try {   
-        console.log(req.query.name);
+    try {
         const response = await addEventParticipant(req.query.name, req.ip);
         res.send(response);
     } catch(err) {
@@ -168,11 +167,21 @@ app.post('/events', isAdmin, upload.single('image'), async (req, res, next) => {
     }
     try {
         const relativePath = path.relative(__dirname, req.file.path);
-        console.log(relativePath);
-
         const response = await postEvent(req.body, relativePath);
-
         res.send(response);
+    } catch(err) {
+        next(err);
+    }
+})
+
+app.get('/events/images', async(req, res, next) => {
+    const options = {
+        root: path.join(__dirname)
+    };
+    try{
+        const path = req.query.path;
+        console.log(path);
+        res.sendFile(path, options);
     } catch(err) {
         next(err);
     }

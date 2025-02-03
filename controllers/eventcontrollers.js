@@ -15,7 +15,6 @@ export const getEvents = async (queryParams) => {
     try {
         queryParams?.paginate?.toLowerCase() === "true" ? queryParams.paginate = true : queryParams.paginate = false;
         const result = await fetchEvents(queryParams);
-        console.log(result);
         return result;
     } catch (err) {
         throw err;

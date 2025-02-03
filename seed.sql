@@ -1,14 +1,14 @@
 INSERT INTO events (eventName, eventDate, eventDesc, eventStub, eventThumb, eventDuration) 
-VALUES('Bakesale', '2025-02-28T13:11:00', 'A bakesale for the local church group', 'A bakesale', 'URL', 1),
-('Art Exhibition', '2025-03-15T18:00:00', 'Local artists showcase their work', 'Art Exhibit', 'URL', 2),
-('Charity Run', '2025-04-05T08:00:00', '5K run to raise money for cancer research', 'Charity Run', 'URL', 3),
-('Summer Concert', '2025-06-21T19:30:00', 'Live music in the park', 'Summer Concert', 'URL', 1),
-('Book Fair', '2025-07-12T10:00:00', 'Annual event for book lovers', 'Book Fair', 'URL', 2),
-('Food Festival', '2025-08-09T12:00:00', 'Celebrating culinary diversity', 'Food Fest', 'URL', 1),
-('Halloween Party', '2025-10-31T20:00:00', 'Costume contest and spooky fun', 'Halloween Party', 'URL', 2),
-('Winter Market', '2025-12-13T14:00:00', 'Local crafts and holiday shopping', 'Winter Market', 'URL', 1),
-('New Year Gala', '2026-01-01T21:00:00', 'Celebrate the new year with dance and dinner', 'New Year Gala', 'URL', 1),
-('Easter Egg Hunt', '2026-04-04T10:00:00', 'Family-friendly event with games and prizes', 'Easter Hunt', 'URL', 1);
+VALUES('Bakesale', '2025-02-28T13:11:00', 'A bakesale for the local church group', 'A bakesale', 'uploads/image-1738532905053-119265797.jpg', 1),
+('Art Exhibition', '2025-03-15T18:00:00', 'Local artists showcase their work', 'Art Exhibit', 'uploads/image-1738532905053-119265797.jpg', 2),
+('Charity Run', '2025-04-05T08:00:00', '5K run to raise money for cancer research', 'Charity Run', 'uploads/image-1738532905053-119265797.jpg', 3),
+('Summer Concert', '2025-06-21T19:30:00', 'Live music in the park', 'Summer Concert', 'uploads/image-1738532905053-119265797.jpg', 1),
+('Book Fair', '2025-07-12T10:00:00', 'Annual event for book lovers', 'Book Fair', 'uploads/image-1738532905053-119265797.jpg', 2),
+('Food Festival', '2025-08-09T12:00:00', 'Celebrating culinary diversity', 'Food Fest', 'uploads/image-1738532905053-119265797.jpg', 1),
+('Halloween Party', '2025-10-31T20:00:00', 'Costume contest and spooky fun', 'Halloween Party', 'uploads/image-1738532905053-119265797.jpg', 2),
+('Winter Market', '2025-12-13T14:00:00', 'Local crafts and holiday shopping', 'Winter Market', 'uploads/image-1738532905053-119265797.jpg', 1),
+('New Year Gala', '2026-01-01T21:00:00', 'Celebrate the new year with dance and dinner', 'New Year Gala', 'uploads/image-1738532905053-119265797.jpg', 1),
+('Easter Egg Hunt', '2026-04-04T10:00:00', 'Family-friendly event with games and prizes', 'Easter Hunt', 'uploads/image-1738532905053-119265797.jpg', 1);
 
 INSERT INTO eventTags (eventID, eventTag)
 VALUES('1', 'food'), ('1', 'charity'), ('1', 'community'),
