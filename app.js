@@ -10,31 +10,32 @@ const MySQLStore = await import('express-mysql-session').then(module => module.d
 import { addEventParticipant, getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 import { patchUser } from './models/usermodels.js';
+import 'dotenv/config';
 
 export const app = express();
 export const port = process.env.PORT || 3000;
 
 //Middleware
 app.use(cors({
-    origin:'http://localhost:5173',
+    origin:process.env.CORS_ORIGIN,
     credentials: true,
 }));
 
 app.use(express.json());
 
 const options = {
-    host: 'localhost',
-    port: 3306,
-    user: 'test',
-    password: 'secret',
-    database: 'session_test'
+    host: process.env.MYSQL_HOST,
+    port: process.env.MYSQL_PORT,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_SESSION_DB
 };
 
 export const sessionStore = new MySQLStore(options);
 
 app.use(session({
-    key: 'session_cookie_name',
-    secret: 'secret-key',
+    key: process.env.SESSION_KEY,
+    secret: process.env.SESSION_SECRET,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,

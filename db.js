@@ -1,14 +1,16 @@
 import mysql2 from 'mysql2/promise';
 import fs from 'fs/promises';
 import { parseSQL } from './utils/parsers.js';
+import 'dotenv/config'
 
 const MYSQL_CONF = {
     connectionLimit: 10,
-    host: 'localhost',
-    user: 'test',
-    password: 'secret',
-    database: 'eventsPlatform'
-}
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT,
+};
 
 class DBHelper {
 
