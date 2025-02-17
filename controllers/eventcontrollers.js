@@ -29,11 +29,11 @@ export const getTags = async () => {
     }
 }
 
-export const addEventParticipant = async (eventName, userIP) => {
+export const addEventParticipant = async (eventName, userEmail) => {
     try {
         const event = await getEvents({name:eventName});
         const eventID = event.events[0].id;
-        return await updateEventParticipants(eventID, userIP);
+        return await updateEventParticipants(eventID, userEmail);
     } catch(err) {
         throw err
     }

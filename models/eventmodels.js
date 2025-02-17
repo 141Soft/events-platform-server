@@ -155,17 +155,17 @@ export const fetchTags = async() => {
     }   
 }
 
-export const updateEventParticipants = async (eventID, userIP) => {
+export const updateEventParticipants = async (eventID, userEmail) => {
     let connection;
     try {
         connection = await db.pool.getConnection()
 
         const query = `
             INSERT INTO eventParticipants
-            (eventID, userIP)
+            (eventID, userEmail)
             VALUES(?, ?);
         `
-        const params = [eventID, userIP];
+        const params = [eventID, userEmail];
 
         const [result] = await connection.query(query, params);
         return result;

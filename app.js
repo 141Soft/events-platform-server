@@ -155,7 +155,7 @@ app.patch('/users/update', isAdmin, async (req, res, next) => {
 
 app.post('/events/participants', async (req, res, next) => {
     try {
-        const response = await addEventParticipant(req.query.name, req.ip);
+        const response = await addEventParticipant(req.query.name, req.query.email);
         res.send(response);
     } catch(err) {
         next(err);
@@ -202,6 +202,15 @@ app.use((err, req, res, next) => {
     if(err.code === "ECONNREFUSED"){
         console.error(err);
         res.status(503).send({ error: 'Database not initialised' });
+    } else {
+        next(err);
+    }
+})
+
+app.use((err, req, res, next) => {
+    if(err.code === "ER_DATA_TOO_LONG"){
+        console.error(err)
+        res.status(503).send({ error: err.sqlMessage});
     } else {
         next(err);
     }
