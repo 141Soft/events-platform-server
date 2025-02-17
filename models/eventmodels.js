@@ -198,10 +198,22 @@ export const fetchUserEvents = async (userEmail) => {
         const placeholders = ids.map((id) => id = '?').join(',');
 
         const eventsQuery = `
-            SELECT * FROM events
+            SELECT e.*, GROUP_CONCAT(et.eventTag SEPARATOR ',') AS tags
+            FROM events e
+            LEFT JOIN eventTags et ON e.id = et.eventID
             WHERE id IN (${placeholders});
-        `
+        `;
+
+        // const eventsQuery = `
+        //     SELECT * FROM events
+        //     WHERE id IN (${placeholders});
+        // `
         const [eventResult] = await connection.query(eventsQuery, ids);
+
+        for(const event of eventResult){
+            event.tags = event.tags.split(',');
+        };
+
         return eventResult;
 
     } catch(err) {
@@ -209,6 +221,4 @@ export const fetchUserEvents = async (userEmail) => {
     } finally {
         if(connection) { connection.release(); }
     };
-}
-
-await fetchUserEvents('d.mell.professional@gmail.com')
+};
