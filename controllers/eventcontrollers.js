@@ -1,4 +1,4 @@
-import {insertEvent, fetchEvents, fetchTags, updateEventParticipants, insertTags} from '../models/eventmodels.js';
+import {insertEvent, fetchEvents, fetchTags, updateEventParticipants, insertTags, fetchUserEvents} from '../models/eventmodels.js';
 
 export const postEvent = async (event, path) => {
     try {
@@ -29,12 +29,23 @@ export const getTags = async () => {
     }
 }
 
-export const addEventParticipant = async (eventName, userEmail) => {
+export const addEventParticipant = async (eventID, userEmail) => {
     try {
-        const event = await getEvents({name:eventName});
-        const eventID = event.events[0].id;
-        return await updateEventParticipants(eventID, userEmail);
+        const event = await getEvents({id:eventID});
+        if(event.events[0]){
+            const result = await updateEventParticipants(eventID, userEmail);
+            return result;
+        };
     } catch(err) {
-        throw err
-    }
-}
+        throw err;
+    };
+};
+
+export const getUserEvents = async (userEmail) => {
+    try {
+        const result = await fetchUserEvents(userEmail);
+        return result;
+    } catch(err) {
+        throw err;
+    };
+};

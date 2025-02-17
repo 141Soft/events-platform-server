@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs/promises';
 const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
-import { addEventParticipant, getEvents, getTags, postEvent } from './controllers/eventcontrollers.js';
+import { addEventParticipant, getEvents, getTags, getUserEvents, postEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 import { patchUser } from './models/usermodels.js';
 import 'dotenv/config';
@@ -150,17 +150,26 @@ app.patch('/users/update', isAdmin, async (req, res, next) => {
         res.send(response); 
     } catch(err){
         next(err);
-    }
-})
+    };
+});
 
 app.post('/events/participants', async (req, res, next) => {
     try {
-        const response = await addEventParticipant(req.query.name, req.query.email);
-        res.send(response);
+        const response = await addEventParticipant(req.query.id, req.query.email);
+        res.status(200).send(response);
     } catch(err) {
         next(err);
-    }
-})
+    };
+});
+
+app.get('/users/events', async (req, res, next) => {
+    try{
+        const response = await getUserEvents(req.query.email);
+        res.send(response);
+    } catch (err) {
+        next(err);
+    };
+});
 
 app.post('/events', isAdmin, upload.single('image'), async (req, res, next) => {
     if(!req.file) {

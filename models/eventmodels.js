@@ -173,5 +173,37 @@ export const updateEventParticipants = async (eventID, userEmail) => {
         throw err;
     } finally {
         if(connection) { connection.release(); }
-    }
+    };
+}
+
+export const fetchUserEvents = async (userEmail) => {
+    let connection;
+    try{
+        connection = await db.pool.getConnection();
+
+        const idQuery = `
+            SELECT * FROM eventParticipants
+            WHERE userEmail = ?;
+        `
+
+        const idParams = [userEmail]
+
+        const [idResult] = await connection.query(idQuery, idParams);
+
+        const ids = idResult.map((e) => e = e.eventID);
+
+        const placeholders = ids.map((id) => id = '?').join(',');
+
+        const eventsQuery = `
+            SELECT * FROM events
+            WHERE id IN (${placeholders});
+        `
+        const [eventResult] = await connection.query(eventsQuery, ids);
+        return eventResult;
+
+    } catch(err) {
+        throw err;
+    } finally {
+        if(connection) { connection.release(); }
+    };
 }
