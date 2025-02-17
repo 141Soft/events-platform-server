@@ -189,6 +189,9 @@ export const fetchUserEvents = async (userEmail) => {
         const idParams = [userEmail]
 
         const [idResult] = await connection.query(idQuery, idParams);
+        if(idResult.length === 0){
+            return idResult;
+        };
 
         const ids = idResult.map((e) => e = e.eventID);
 
@@ -207,3 +210,5 @@ export const fetchUserEvents = async (userEmail) => {
         if(connection) { connection.release(); }
     };
 }
+
+await fetchUserEvents('d.mell.professional@gmail.com')
