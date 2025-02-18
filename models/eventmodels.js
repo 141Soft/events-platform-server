@@ -160,6 +160,17 @@ export const updateEventParticipants = async (eventID, userEmail) => {
     try {
         connection = await db.pool.getConnection()
 
+        const validationQuery = `
+            SELECT * FROM events
+            WHERE id = ?
+        `
+
+        const [validationResult] = await connection.query(validationQuery, eventID);
+
+        if(!validationResult[0]){
+            throw new Error('Event does not exist');
+        };
+
         const query = `
             INSERT INTO eventParticipants
             (eventID, userEmail)
