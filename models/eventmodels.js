@@ -182,7 +182,7 @@ export const fetchUserEvents = async (userEmail) => {
         connection = await db.pool.getConnection();
 
         const idQuery = `
-            SELECT * FROM eventParticipants
+            SELECT eventID FROM eventParticipants
             WHERE userEmail = ?;
         `
 
@@ -190,28 +190,26 @@ export const fetchUserEvents = async (userEmail) => {
 
         const [idResult] = await connection.query(idQuery, idParams);
         if(idResult.length === 0){
-            return idResult;
+            return [];
         };
 
-        const ids = idResult.map((e) => e = e.eventID);
+        const ids = idResult.map(e => e.eventID);
 
-        const placeholders = ids.map((id) => id = '?').join(',');
+        const placeholders = ids.map(() => '?').join(',');
 
         const eventsQuery = `
-            SELECT e.*, GROUP_CONCAT(et.eventTag SEPARATOR ',') AS tags
+            SELECT e.*,
+            GROUP_CONCAT(DISTINCT et.eventTag SEPARATOR ',') AS tags
             FROM events e
             LEFT JOIN eventTags et ON e.id = et.eventID
-            WHERE id IN (${placeholders});
+            WHERE e.id IN (${placeholders})
+            GROUP BY e.id;
         `;
 
-        // const eventsQuery = `
-        //     SELECT * FROM events
-        //     WHERE id IN (${placeholders});
-        // `
         const [eventResult] = await connection.query(eventsQuery, ids);
 
         for(const event of eventResult){
-            event.tags = event.tags.split(',');
+            event.tags = event.tags ? event.tags.split(',') : [];
         };
 
         return eventResult;
