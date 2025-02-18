@@ -157,19 +157,9 @@ export const fetchTags = async() => {
 
 export const updateEventParticipants = async (eventID, userEmail) => {
     let connection;
+    console.log(eventID);
     try {
-        connection = await db.pool.getConnection()
-
-        const validationQuery = `
-            SELECT * FROM events
-            WHERE id = ?
-        `
-
-        const [validationResult] = await connection.query(validationQuery, eventID);
-
-        if(!validationResult[0]){
-            throw new Error('Event does not exist');
-        };
+        connection = await db.pool.getConnection();
 
         const query = `
             INSERT INTO eventParticipants
@@ -231,3 +221,28 @@ export const fetchUserEvents = async (userEmail) => {
         if(connection) { connection.release(); }
     };
 };
+
+export const deleteEvent = async (eventID) => {
+    let connection;
+    try{
+        connection = await db.pool.getConnection();
+
+        const query = 'DELETE FROM events WHERE id = ?'
+
+        const [result] = await connection.query(query, [eventID]);
+
+        if(result.affectedRows === 0){
+            throw new Error('Event not found');
+        };
+
+        const participantsQuery = 'DELETE FROM eventParticipants WHERE eventID = ?'
+
+        const [participantsResult] = await connection.query(participantsQuery, [eventID]);
+
+        return { success: true, msg: 'Event deleted Successfully' };
+    } catch(err) {
+        throw err;
+    } finally {
+        if(connection) { connection.release(); }
+    }
+}

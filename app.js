@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs/promises';
 const MySQLStore = await import('express-mysql-session').then(module => module.default(session));
-import { addEventParticipant, getEvents, getTags, getUserEvents, postEvent } from './controllers/eventcontrollers.js';
+import { addEventParticipant, getEvents, getTags, getUserEvents, postEvent, removeEvent } from './controllers/eventcontrollers.js';
 import { getUser, loginUser, postUser } from './controllers/usercontrollers.js';
 import { patchUser } from './models/usermodels.js';
 import 'dotenv/config';
@@ -195,6 +195,15 @@ app.get('/events/images', async(req, res, next) => {
         next(err);
     }
 })
+
+app.delete('/events/remove', isAdmin, async(req, res, next) => {
+    try{
+        const response = await removeEvent(req.query.id);
+        res.send(response);
+    } catch(err) {
+        next(err);
+    }
+});
 
 //Test routes
 app.get('/secure-route', isAuthenticated, (req, res) => {

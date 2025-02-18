@@ -1,4 +1,4 @@
-import {insertEvent, fetchEvents, fetchTags, updateEventParticipants, insertTags, fetchUserEvents} from '../models/eventmodels.js';
+import {insertEvent, fetchEvents, fetchTags, updateEventParticipants, insertTags, fetchUserEvents, deleteEvent} from '../models/eventmodels.js';
 
 export const postEvent = async (event, path) => {
     try {
@@ -35,6 +35,8 @@ export const addEventParticipant = async (eventID, userEmail) => {
         if(event.events[0]){
             const result = await updateEventParticipants(eventID, userEmail);
             return result;
+        } else {
+            return {status: 'failed', msg: 'Event does not exist'};
         };
     } catch(err) {
         throw err;
@@ -44,6 +46,15 @@ export const addEventParticipant = async (eventID, userEmail) => {
 export const getUserEvents = async (userEmail) => {
     try {
         const result = await fetchUserEvents(userEmail);
+        return result;
+    } catch(err) {
+        throw err;
+    };
+};
+
+export const removeEvent = async (eventID) => {
+    try{
+        const result = await deleteEvent(eventID);
         return result;
     } catch(err) {
         throw err;
